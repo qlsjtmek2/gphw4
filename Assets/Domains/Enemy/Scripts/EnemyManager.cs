@@ -70,8 +70,12 @@ public class EnemyManager : MonoBehaviour
     public Enemy GetFromPool() {
         if (_pool.Count > 0) {
             Enemy obj = _pool.Dequeue();
-            obj.gameObject.SetActive(true);
-            return obj;
+
+            if (obj != null)
+            {
+                obj.gameObject.SetActive(true);
+                return obj;
+            }
         }
 
         return null;

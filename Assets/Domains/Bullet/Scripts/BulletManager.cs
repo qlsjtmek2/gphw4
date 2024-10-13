@@ -36,8 +36,12 @@ public class BulletManager : MonoBehaviour
     public Bullet GetFromPool() {
         if (_pool.Count > 0) {
             Bullet obj = _pool.Dequeue();
-            obj.gameObject.SetActive(true);
-            return obj;
+            
+            if (obj != null)
+            {
+                obj.gameObject.SetActive(true);
+                return obj;
+            }
         }
 
         return null;
