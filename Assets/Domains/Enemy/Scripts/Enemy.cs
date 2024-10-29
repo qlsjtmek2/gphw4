@@ -10,7 +10,7 @@ public interface IEnemyState
     void Update(Enemy enemy);
 }
 
-public class IdleState : IEnemyState
+public class EnemyIdleState : IEnemyState
 {
     private float _disableTimer = 0f;
 
@@ -24,9 +24,10 @@ public class IdleState : IEnemyState
     {
         enemy.Stop();
 
-        if (other.tag == "Bullet")
+        IAttackable attackable = other.gameObject.GetComponent<IAttackable>();
+        if (attackable != null)
         {
-            enemy.SwitchState(new DeadState());
+            enemy.OnDamage(attackable, attackable.GetDamage());
         }
     }
 
@@ -37,16 +38,16 @@ public class IdleState : IEnemyState
         _disableTimer += Time.deltaTime;
         if (_disableTimer >= enemy.LifeTime)
         {
-            enemy.SwitchState(new DeadState());
+            enemy.Die();
         }
     }
 }
 
-public class AttackState : IEnemyState
+public class EnemyAttackState : IEnemyState
 {
     public void Start(Enemy enemy)
     {
-        enemy.OnAttack.Invoke();
+        enemy.OnAttacked.Invoke();
         enemy.Stop();
     }
 
@@ -61,11 +62,11 @@ public class AttackState : IEnemyState
     }
 }
 
-public class DeadState : IEnemyState
+public class EnemyDieState : IEnemyState
 {
     public void Start(Enemy enemy)
     {
-        enemy.OnDead.Invoke();
+        enemy.OnDied.Invoke();
         enemy.Stop();
         enemy.StartCoroutine(DisableAfterDelay(enemy, 1f));
     }
@@ -92,7 +93,7 @@ public class DeadState : IEnemyState
     }
 }
 
-public class DisableState : IEnemyState
+public class EnemyDisableState : IEnemyState
 {
     public void Start(Enemy enemy)
     {
@@ -111,7 +112,8 @@ public class DisableState : IEnemyState
 }
 
 [RequireComponent(typeof(NavMeshAgent))]
-public class Enemy : MonoBehaviour
+[RequireComponent(typeof(Health))]
+public class Enemy : MonoBehaviour, IDamageable
 {
     public float LifeTime = 60f;
     public Transform Target;
@@ -122,31 +124,33 @@ public class Enemy : MonoBehaviour
     }
 
     public UnityEvent OnIdle;
-    public UnityEvent OnDead;
-    public UnityEvent OnAttack;
+    public UnityEvent OnDied;
+    public UnityEvent OnAttacked;
     public UnityEvent OnDisabled;
 
     private IEnemyState _state;
     private NavMeshAgent _agent;
     private Transform _savedTarget;
     private OpacityController _opacityController;
+    private Health _health;
 
     void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
         _opacityController = GetComponentInChildren<OpacityController>();
+        _health = GetComponent<Health>();
         _savedTarget = Target;
         gameObject.SetActive(false);
     }
 
     void OnEnable()
     {
-        SwitchState(new IdleState());
+        ChangeState(new EnemyIdleState());
     }
 
     void OnDisable()
     {
-        SwitchState(new DisableState());
+        ChangeState(new EnemyDisableState());
         EnemyManager.Instance.ReturnToPool(this);
     }
 
@@ -181,7 +185,7 @@ public class Enemy : MonoBehaviour
         Target = _savedTarget;
     }
 
-    public void SwitchState(IEnemyState state)
+    public void ChangeState(IEnemyState state)
     {
         _state = state;
         _state.Start(this);
@@ -194,16 +198,26 @@ public class Enemy : MonoBehaviour
 
     public void StartAttack()
     {
-        SwitchState(new AttackState());
+        ChangeState(new EnemyAttackState());
     }
 
     public void StopAttack()
     {
-        SwitchState(new IdleState());
+        ChangeState(new EnemyIdleState());
+    }
+    
+    public void OnDamage(IAttackable attacker, float damage)
+    {
+        _health.Damage(damage);
+
+        if (_health.Value <= 0)
+        {
+            Die();
+        }
     }
 
-    public void Attack()
+    public void Die()
     {
-
+        ChangeState(new EnemyDieState());
     }
 }

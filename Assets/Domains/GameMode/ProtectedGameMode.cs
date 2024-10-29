@@ -12,6 +12,7 @@ public class ProtectedGameMode : MonoBehaviour
     }
 
     private float _currentTimer;
+    private bool _isStopped = false;
 
     void Start()
     {
@@ -20,8 +21,9 @@ public class ProtectedGameMode : MonoBehaviour
 
     void Update()
     {
-        _currentTimer -= Time.deltaTime;
+        if (_isStopped) return;
 
+        _currentTimer -= Time.deltaTime;
         if (_currentTimer <= 0)
         {
             Win();
@@ -30,11 +32,14 @@ public class ProtectedGameMode : MonoBehaviour
 
     public void GameOver()
     {
+        TimerStop();
         StartCoroutine(LoadSceneAfterDelay("LoseScreen", 2f));
     }
 
     public void Win()
     {
+        TimerStop();
+        _currentTimer = 0;
         StartCoroutine(LoadSceneAfterDelay("WinScreen", 2f));
     }
 
@@ -42,5 +47,10 @@ public class ProtectedGameMode : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         SceneManager.LoadScene(sceneName);
+    }
+
+    public void TimerStop()
+    {
+
     }
 }

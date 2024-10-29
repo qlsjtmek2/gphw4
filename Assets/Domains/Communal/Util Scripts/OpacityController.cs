@@ -15,6 +15,8 @@ public class OpacityController : MonoBehaviour
     // 불투명도를 변경하는 메서드
     public void FadeTo(float targetOpacity, float duration)
     {
+        if (material == null) return;
+        
         Color color = material.color;
         material.DOColor(new Color(color.r, color.g, color.b, targetOpacity), duration);
     }

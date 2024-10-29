@@ -19,7 +19,6 @@ namespace Movement.Adapter
             bullet.Position = BulletSpawnPoint.position;
             bullet.Direction = Camera.main.transform.forward;
             bullet.transform.rotation = Quaternion.LookRotation(bullet.Direction);
-
             OnFired?.Invoke(bullet.Position);
         }
     }

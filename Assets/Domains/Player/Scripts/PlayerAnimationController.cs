@@ -10,6 +10,7 @@ public class PlayerAnimationController : MonoBehaviour
     private readonly string JUMP_PARAM_NAME = "Jump";
     private readonly string GROUNDED_PARAM_NAME = "Grounded";
     private readonly string FIRE_PARAM_NAME = "Fire";
+    private readonly string IS_DIE_PARAM_NAME = "IsDie";
 
     [SerializeField] private Speed _speed;
     [SerializeField] private Animator _animator;
@@ -43,5 +44,10 @@ public class PlayerAnimationController : MonoBehaviour
     {
         _animator.SetBool(FIRE_PARAM_NAME, false);
         _animator.SetBool(FIRE_PARAM_NAME, true);
+    }
+
+    public void OnDie()
+    {
+        _animator.SetBool(IS_DIE_PARAM_NAME, true);
     }
 }

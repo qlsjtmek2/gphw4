@@ -56,12 +56,10 @@ public class Protected : MonoBehaviour, IDamageable
         _state.Collision(this, other);
     }
 
-    public IProtectedState ChangeState(IProtectedState newState)
+    public void ChangeState(IProtectedState newState)
     {
-        IProtectedState prevState = _state;
         _state = newState;
-
-        return prevState;
+        _state.Start(this);
     }
 
     public void OnDamage(IAttackable attacker, float damage)

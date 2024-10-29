@@ -48,7 +48,7 @@ public class Player : MonoBehaviour, IDamageable
     private void Start()
     {
         _health = GetComponent<Health>();
-        _state = new PlayerIdleState();
+        ChangeState(new PlayerIdleState());
     }
 
     public void OnCollisionEnter(Collision other)
@@ -68,6 +68,12 @@ public class Player : MonoBehaviour, IDamageable
 
     private void Die()
     {
-        _state = new PlayerDieState();
+        ChangeState(new PlayerDieState());
+    }
+    
+    public void ChangeState(IPlayerState state)
+    {
+        _state = state;
+        _state.Start(this);
     }
 }
