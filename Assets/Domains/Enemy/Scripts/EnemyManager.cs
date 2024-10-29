@@ -1,7 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Domain.Enemy;
 
 public class EnemyManager : MonoBehaviour
 {
@@ -11,7 +9,6 @@ public class EnemyManager : MonoBehaviour
     public int PoolSize = 20;
 
     [Header("Spawn Settings")]
-    public Transform Target;
     public Transform CenterSpawnPoint;
     public float SpawnRadius = 10f;
     public float SpawnInterval = 5f;
@@ -56,12 +53,8 @@ public class EnemyManager : MonoBehaviour
 
             if (enemy == null) return;
 
-            Vector3 randomPosition = Random.onUnitSphere * SpawnRadius;
-            randomPosition.y = 0.2f;
-            
-            enemy.Position = CenterSpawnPoint.position + randomPosition;
-            enemy.TargetPosition = Target.position;
-            enemy.transform.LookAt(Target);
+            Vector2 randomPosition = Random.insideUnitCircle.normalized * SpawnRadius;
+            enemy.Position = CenterSpawnPoint.position + new Vector3(randomPosition.x, 0.2f, randomPosition.y);
 
             _timer = 0f;
         }

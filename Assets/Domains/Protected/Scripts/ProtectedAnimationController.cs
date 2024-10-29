@@ -13,11 +13,8 @@ public class ProtectedAnimationController : MonoBehaviour
         
     }
 
-    public void OnDead(IProtectedState prevState, IProtectedState newState)
+    public void OnDead()
     {
-        if (newState is DieState)
-        {
-            _animator.SetBool(DEATH_PARAM_NAME, true);
-        }
+        _animator.SetBool(DEATH_PARAM_NAME, true);
     }
 }

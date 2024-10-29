@@ -53,10 +53,9 @@ public class PlayerJump : MonoBehaviour
     {
         if (IsInLayerMask(collision.gameObject, GroundMask))
         {
-            _isGrounded = true;
+            Land();
         }
     }
-
 
     private void OnCollisionExit(Collision collision)
     {
@@ -70,12 +69,18 @@ public class PlayerJump : MonoBehaviour
     {
         if (!_isGrounded)
         {
-            _isGrounded = true;
-            
-            OnLanded?.Invoke();
+            if (IsInLayerMask(collision.gameObject, GroundMask))
+            {
+                Land();
+            }
         }
     }
 
+    private void Land()
+    {
+        _isGrounded = true;
+        OnLanded?.Invoke();
+    }
 
     private bool IsInLayerMask(GameObject obj, LayerMask layerMask)
     {

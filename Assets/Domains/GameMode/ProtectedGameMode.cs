@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -23,20 +24,23 @@ public class ProtectedGameMode : MonoBehaviour
 
         if (_currentTimer <= 0)
         {
-            SceneManager.LoadScene("WinScreen");
+            Win();
         }
     }
 
-    public void OnProtectedDeath(IProtectedState prevState, IProtectedState newState)
+    public void GameOver()
     {
-        if (newState is DieState)
-        {
-            Lose();
-        }
+        StartCoroutine(LoadSceneAfterDelay("LoseScreen", 2f));
     }
 
-    void Lose()
+    public void Win()
     {
-        SceneManager.LoadScene("LoseScreen");
+        StartCoroutine(LoadSceneAfterDelay("WinScreen", 2f));
+    }
+
+    private IEnumerator LoadSceneAfterDelay(string sceneName, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        SceneManager.LoadScene(sceneName);
     }
 }

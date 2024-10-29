@@ -13,10 +13,10 @@ TagManager:
   - Object
   - Water
   - UI
-  - Entity
+  - Ally
   - Circle
   - Terrain
-  - 
+  - Enemy
   - 
   - 
   - 

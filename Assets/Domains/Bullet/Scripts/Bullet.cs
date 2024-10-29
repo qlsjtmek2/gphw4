@@ -6,7 +6,7 @@ namespace Domain.Bullet
 {
     public interface IBulletState
     {
-        void Collision(Bullet bullet);
+        void Collision(Bullet bullet, Collider other);
         void Update(Bullet bullet);
     }
 
@@ -14,9 +14,13 @@ namespace Domain.Bullet
     {
         private float _disableTimer = 0f;
 
-        public void Collision(Bullet bullet)
+        public void Collision(Bullet bullet, Collider other)
         {
-            bullet.gameObject.SetActive(false);
+            IDamageable damageable = other.gameObject.GetComponent<IDamageable>();
+            if (damageable != null)
+            {
+                bullet.OnAttack(damageable);
+            }
         }
 
         public void Update(Bullet bullet)
@@ -33,7 +37,7 @@ namespace Domain.Bullet
 
     public class DisableState : IBulletState
     {
-        public void Collision(Bullet bullet)
+        public void Collision(Bullet bullet, Collider other)
         {
             // Do nothing
         }
@@ -44,7 +48,7 @@ namespace Domain.Bullet
         }
     }
 
-    public class Bullet : MonoBehaviour
+    public class Bullet : MonoBehaviour, IAttackable
     {
         public Vector3 Direction;
         public float Velocity = 10f;
@@ -80,7 +84,17 @@ namespace Domain.Bullet
 
         void OnTriggerEnter(Collider other)
         {
-            _state.Collision(this);
+            _state.Collision(this, other);
+        }
+        
+        public void OnAttack(IDamageable target)
+        {
+            gameObject.SetActive(false);
+        }
+
+        public float GetDamage()
+        {
+            return 1f;
         }
     }
 }

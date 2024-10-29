@@ -83,11 +83,16 @@ public class PlayerMove : MonoBehaviour
     
     private void ClampMaxSpeed()
     {
-        // 현재 속도가 최대 속도를 초과할 경우, 속도를 제한
-        if (_rigid.velocity.magnitude > Speed)
+        // 수평 속도 (x, z 축)만 고려하여 최대 속도를 제한
+        Vector3 horizontalVelocity = new Vector3(_rigid.velocity.x, 0, _rigid.velocity.z);
+
+        if (horizontalVelocity.magnitude > Speed)
         {
-            // 속도의 방향을 유지하면서 최대 속도로 제한
-            _rigid.velocity = _rigid.velocity.normalized * Speed;
+            // 수평 속도의 방향을 유지하면서 최대 속도로 제한
+            horizontalVelocity = horizontalVelocity.normalized * Speed;
+            
+            // y축 속도는 유지하고, x와 z 축 속도만 조정
+            _rigid.velocity = new Vector3(horizontalVelocity.x, _rigid.velocity.y, horizontalVelocity.z);
         }
     }
 }
